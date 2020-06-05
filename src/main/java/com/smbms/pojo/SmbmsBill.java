@@ -29,7 +29,6 @@ public class SmbmsBill {
 
         private String providerName;//供应商名称
 
-
         public String getProviderName() {
             return providerName;
         }

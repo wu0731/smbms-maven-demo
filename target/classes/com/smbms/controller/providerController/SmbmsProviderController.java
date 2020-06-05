@@ -34,11 +34,10 @@ public class SmbmsProviderController {
 
     @RequestMapping(value = "/delProvider",produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public String delProvider(HttpServletRequest request) {
-        String id = request.getParameter("proid");
+    public String delProvider(String proid) {
         HashMap<String, String> resultMap = new HashMap<String, String>();
-        if(!StringUtils.isNullOrEmpty(id)){
-            int flag = providerService.deleteProviderById(id);
+        if(!StringUtils.isNullOrEmpty(proid)){
+            int flag = providerService.deleteProviderById(proid);
             if(flag == 0){//删除成功
                 resultMap.put("delResult", "true");
             }else if(flag == -1){//删除失败
@@ -54,12 +53,11 @@ public class SmbmsProviderController {
     }
 
     @RequestMapping(value = "/providerModify")
-    public String modify(HttpServletRequest request, ProviderCondition providerCondition){
-        String id = request.getParameter("id");
+    public String modify(String id,HttpSession session, ProviderCondition providerCondition){
         SmbmsProvider provider = new SmbmsProvider();
         BeanUtils.copyProperties(providerCondition,provider);
         provider.setId(Integer.valueOf(id));
-        provider.setModifyBy(((SmbmsUser)request.getSession().getAttribute(Constants.USER_SESSION)).getId());
+        provider.setModifyBy(((SmbmsUser)session.getAttribute(Constants.USER_SESSION)).getId());
         provider.setModifyDate(new Date());
         boolean flag = false;
         flag = providerService.modify(provider);
@@ -140,20 +138,18 @@ public class SmbmsProviderController {
     }
 
     @RequestMapping(value = "/ProviderQuery")
-    public String query(HttpServletRequest request) {
-        String queryProName = request.getParameter("queryProName");
-        String queryProCode = request.getParameter("queryProCode");
+    public String query(Model model, String queryProName,String queryProCode){
         if(StringUtils.isNullOrEmpty(queryProName)){
             queryProName = "";
         }
         if(StringUtils.isNullOrEmpty(queryProCode)){
             queryProCode = "";
         }
-        List<SmbmsProvider> providerList = new ArrayList<SmbmsProvider>();
-        providerList = providerService.getProviderList(queryProName,queryProCode);
-        request.setAttribute("providerList", providerList);
-        request.setAttribute("queryProName", queryProName);
-        request.setAttribute("queryProCode", queryProCode);
+        List<SmbmsProvider> providerList=providerService.getProviderList(queryProName,queryProCode);
+
+        model.addAttribute("providerList",providerList);
+        model.addAttribute("queryProName",queryProName);
+        model.addAttribute("queryProCode",queryProCode);
         return "providerlist";
     }
 }

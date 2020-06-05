@@ -23,6 +23,4 @@ public interface SmbmsAddressMapper {
     int updateByPrimaryKeySelective(SmbmsAddress record);
 
     int updateByPrimaryKey(SmbmsAddress record);
-
-    int updateDemo1(short r);
 }

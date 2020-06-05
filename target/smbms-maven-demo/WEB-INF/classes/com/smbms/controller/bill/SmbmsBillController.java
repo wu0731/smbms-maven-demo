@@ -2,15 +2,18 @@ package com.smbms.controller.bill;
 
 import com.alibaba.fastjson.JSONArray;
 import com.mysql.cj.util.StringUtils;
+import com.smbms.pojo.BillCondition;
 import com.smbms.pojo.SmbmsBill;
 import com.smbms.pojo.SmbmsProvider;
 import com.smbms.pojo.SmbmsUser;
 import com.smbms.service.SmbmsBillService;
 import com.smbms.service.SmbmsProviderService;
 import com.smbms.tools.Constants;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -45,8 +48,7 @@ public class SmbmsBillController {
     }
 
     @RequestMapping(value = "/getBillById")
-    public String getBillById(HttpServletRequest request, Model model, String url) {
-        String id = request.getParameter("billid");
+    public String getBillById(@RequestParam(value = "billid") String id, Model model, String url) {
         if(!StringUtils.isNullOrEmpty(id)){
             SmbmsBill bill = null;
             bill = billService.getBillById(id);
@@ -56,9 +58,13 @@ public class SmbmsBillController {
     }
 
     @RequestMapping(value = "/modify")
-    public String modify(HttpServletRequest request) {
+    public String modify(Model model, HttpServletRequest request, BillCondition billCondition) {
         System.out.println("modify===============");
-        String id = request.getParameter("id");
+        SmbmsBill smbmsBill=new SmbmsBill();
+        BeanUtils.copyProperties(billCondition,smbmsBill);
+        System.out.println(smbmsBill.toString());
+
+        /*String id = request.getParameter("id");
         String productName = request.getParameter("productName");
         String productDesc = request.getParameter("productDesc");
         String productUnit = request.getParameter("productUnit");
@@ -85,7 +91,8 @@ public class SmbmsBillController {
             return "redirect:/bill/query";
         }else{
             return "billmodify";
-        }
+        }*/
+        return "";
     }
 
     @RequestMapping(value = "/delBill")

@@ -2,15 +2,20 @@ package com.smbms.controller.bill;
 
 import com.alibaba.fastjson.JSONArray;
 import com.mysql.cj.util.StringUtils;
+import com.smbms.pojo.BillCondition;
 import com.smbms.pojo.SmbmsBill;
 import com.smbms.pojo.SmbmsProvider;
 import com.smbms.pojo.SmbmsUser;
 import com.smbms.service.SmbmsBillService;
 import com.smbms.service.SmbmsProviderService;
 import com.smbms.tools.Constants;
+import org.springframework.beans.BeanUtils;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -45,8 +50,7 @@ public class SmbmsBillController {
     }
 
     @RequestMapping(value = "/getBillById")
-    public String getBillById(HttpServletRequest request, Model model, String url) {
-        String id = request.getParameter("billid");
+    public String getBillById(@RequestParam(value = "billid") String id, Model model, String url) {
         if(!StringUtils.isNullOrEmpty(id)){
             SmbmsBill bill = null;
             bill = billService.getBillById(id);
@@ -56,9 +60,12 @@ public class SmbmsBillController {
     }
 
     @RequestMapping(value = "/modify")
-    public String modify(HttpServletRequest request) {
+    public String modify(HttpServletRequest request, BillCondition billCondition) {
         System.out.println("modify===============");
-        String id = request.getParameter("id");
+        SmbmsBill smbmsBill=new SmbmsBill();
+        BeanUtils.copyProperties(billCondition,smbmsBill);
+
+/*        String id = request.getParameter("id");
         String productName = request.getParameter("productName");
         String productDesc = request.getParameter("productDesc");
         String productUnit = request.getParameter("productUnit");
@@ -75,12 +82,12 @@ public class SmbmsBillController {
         bill.setProductCount(new BigDecimal(productCount).setScale(2,BigDecimal.ROUND_DOWN));
         bill.setIsPayment(Integer.parseInt(isPayment));
         bill.setTotalPrice(new BigDecimal(totalPrice).setScale(2,BigDecimal.ROUND_DOWN));
-        bill.setProviderId(Integer.parseInt(providerId));
+        bill.setProviderId(Integer.parseInt(providerId));*/
 
-        bill.setModifyBy(((SmbmsUser)request.getSession().getAttribute(Constants.USER_SESSION)).getId());
-        bill.setModifyDate(new Date());
+        smbmsBill.setModifyBy(((SmbmsUser)request.getSession().getAttribute(Constants.USER_SESSION)).getId());
+        smbmsBill.setModifyDate(new Date());
         boolean flag = false;
-        flag = billService.modify(bill);
+        flag = billService.modify(smbmsBill);
         if(flag){
             return "redirect:/bill/query";
         }else{
@@ -88,12 +95,12 @@ public class SmbmsBillController {
         }
     }
 
-    @RequestMapping(value = "/delBill")
-    public void delBill(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String id = request.getParameter("billid");
+    @RequestMapping(value = "/delBill",produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public String delBill(String billid){
         HashMap<String, String> resultMap = new HashMap<String, String>();
-        if(!StringUtils.isNullOrEmpty(id)){
-            boolean flag = billService.deleteBillById(id);
+        if(!StringUtils.isNullOrEmpty(billid)){
+            boolean flag = billService.deleteBillById(billid);
             if(flag){//删除成功
                 resultMap.put("delResult", "true");
             }else{//删除失败
@@ -102,17 +109,14 @@ public class SmbmsBillController {
         }else{
             resultMap.put("delResult", "notexit");
         }
-        //把resultMap转换成json对象输出
-        response.setContentType("application/json");
-        PrintWriter outPrintWriter = response.getWriter();
-        outPrintWriter.write(JSONArray.toJSONString(resultMap));
-        outPrintWriter.flush();
-        outPrintWriter.close();
+        return JSONArray.toJSONString(resultMap);
     }
 
     @RequestMapping(value = "/add")
-    public String add(HttpServletRequest request){
-        String billCode = request.getParameter("billCode");
+    public String add(HttpServletRequest request,BillCondition billCondition){
+        SmbmsBill smbmsBill=new SmbmsBill();
+        BeanUtils.copyProperties(billCondition,smbmsBill);
+       /* String billCode = request.getParameter("billCode");
         String productName = request.getParameter("productName");
         String productDesc = request.getParameter("productDesc");
         String productUnit = request.getParameter("productUnit");
@@ -130,11 +134,11 @@ public class SmbmsBillController {
         bill.setProductCount(new BigDecimal(productCount).setScale(2,BigDecimal.ROUND_DOWN));
         bill.setIsPayment(Integer.parseInt(isPayment));
         bill.setTotalPrice(new BigDecimal(totalPrice).setScale(2,BigDecimal.ROUND_DOWN));
-        bill.setProviderId(Integer.parseInt(providerId));
-        bill.setCreatedBy(((SmbmsUser)request.getSession().getAttribute(Constants.USER_SESSION)).getId());
-        bill.setCreationDate(new Date());
+        bill.setProviderId(Integer.parseInt(providerId));*/
+        smbmsBill.setCreatedBy(((SmbmsUser)request.getSession().getAttribute(Constants.USER_SESSION)).getId());
+        smbmsBill.setCreationDate(new Date());
         boolean flag = false;
-        flag = billService.add(bill);
+        flag = billService.add(smbmsBill);
         System.out.println("add flag -- > " + flag);
         if(flag){
             return  "redirect:/bill/query";
