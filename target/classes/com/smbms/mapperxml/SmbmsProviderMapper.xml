@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smbms.mapper.SmbmsProviderMapper">
+  <insert id="add">
+    insert into smbms_provider (
+    proCode,
+    proName,
+    proDesc,
+    proContact,
+    proPhone,
+    proAddress,
+    proFax,
+    createdBy,
+    creationDate
+    )
+    values(
+    #{proCode,jdbcType=VARCHAR},
+    #{proName,jdbcType=VARCHAR},
+    #{proDesc,jdbcType=VARCHAR},
+    #{proContact,jdbcType=VARCHAR},
+    #{proPhone,jdbcType=VARCHAR},
+    #{proAddress,jdbcType=VARCHAR},
+    #{proFax,jdbcType=VARCHAR},
+    #{createdBy,jdbcType=INTEGER},
+    #{creationDate,jdbcType=TIMESTAMP}
+    )
+  </insert>
+
+  <select id="getProviderList" resultType="SmbmsProvider">
+    select * from smbms_provider where 1=1
+    <if test="proName != null and proName != ''">
+      and proName like concat('%',#{proName,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="proCode != null and proCode != ''">
+      and proCode like concat('%',#{proCode,jdbcType=VARCHAR},'%')
+    </if>
+  </select>
+
+  <delete id="deleteProviderById">
+    delete from smbms_provider where id=#{delId,jdbcType=VARCHAR}
+  </delete>
+
+  <select id="getProviderById" resultType="SmbmsProvider">
+    select * from smbms_provider where id=#{id,jdbcType=VARCHAR}
+  </select>
+
+  <update id="modify">
+    update smbms_provider
+    set
+    proName=#{proName,jdbcType=VARCHAR},
+    proDesc=#{proDesc,jdbcType=VARCHAR},
+    proContact=#{proContact,jdbcType=VARCHAR},
+    proPhone=#{proPhone,jdbcType=VARCHAR},
+    proAddress=#{proAddress,jdbcType=VARCHAR},
+    proFax=#{proFax,jdbcType=VARCHAR},
+    modifyBy=#{modifyBy,jdbcType=INTEGER},
+    modifyDate=#{modifyDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

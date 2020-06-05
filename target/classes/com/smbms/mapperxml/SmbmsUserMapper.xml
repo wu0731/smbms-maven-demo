@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smbms.mapper.SmbmsUserMapper">
+  <insert id="add" parameterType="SmbmsUser">
+    insert into smbms_user (userCode,
+    userName,
+    userPassword,
+    userRole,
+    gender,
+    birthday,
+    phone,
+    address,
+    creationDate,
+    createdBy)
+    values(#{user.userCode,jdbcType=VARCHAR},
+    #{user.userName,jdbcType=VARCHAR},
+    #{user.userPassword,jdbcType=VARCHAR},
+    #{user.userRole,jdbcType=INTEGER},
+    #{user.gender,jdbcType=INTEGER},
+    #{user.birthday,jdbcType=TIMESTAMP},
+    #{user.phone,jdbcType=VARCHAR},
+    #{user.address,jdbcType=VARCHAR},now(),#{user.createdBy,jdbcType=INTEGER})
+  </insert>
+
+  <select id="getLoginUser" resultType="SmbmsUser">
+    select * from smbms_user where userCode=#{userCode,jdbcType=VARCHAR}
+  </select>
+
+  <select id="getUserList" resultType="SmbmsUser">
+    select u.*,r.roleName as userRoleName from smbms_user u,smbms_role r where u.userRole = r.id
+    <if test="userName != null and userName != ''">
+      and u.userName like concat('%',#{userName,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="userRole != null and userRole != 0">
+      and u.userRole = #{userRole}
+    </if>
+    order by creationDate DESC limit #{currentPageNo},#{pageSize}
+  </select>
+
+  <select id="getUserCount" resultType="integer">
+    select count(1) as count from smbms_user u,smbms_role r where u.userRole = r.id
+    <if test="userName != null and userName != ''">
+      and u.userName like concat('%',#{userName,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="userRole != null and userRole != 0">
+      and u.userRole = #{userRole}
+    </if>
+  </select>
+
+  <delete id="deleteUserById" parameterType="integer">
+    delete from smbms_user where id=#{delId,jdbcType=INTEGER}
+  </delete>
+
+  <select id="getUserById" parameterType="string" resultType="SmbmsUser">
+    select u.*,r.roleName as userRoleName from smbms_user u,smbms_role r
+    where u.id=#{id,jdbcType=VARCHAR}
+    and u.userRole = r.id
+  </select>
+
+  <update id="modify">
+    update smbms_user
+    <set>
+      userName=#{user.userName,jdbcType=VARCHAR}
+
+      ,gender=#{user.gender,jdbcType=INTEGER}
+
+      ,birthday=#{user.birthday,jdbcType=TIMESTAMP}
+
+      ,phone=#{user.phone,jdbcType=VARCHAR}
+
+      ,address=#{user.address,jdbcType=VARCHAR}
+
+      ,userRole=#{user.userRole,jdbcType=INTEGER}
+
+      ,modifyBy=#{user.modifyBy,jdbcType=INTEGER}
+
+      ,modifyDate=#{user.modifyDate,jdbcType=TIMESTAMP}
+    </set>
+    where  id = #{user.id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updatePwd">
+    update smbms_user
+    <set>
+      userPassword=#{pwd,jdbcType=VARCHAR}
+    </set>
+    where id = #{id}
+  </update>
+</mapper>
