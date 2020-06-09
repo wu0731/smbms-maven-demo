@@ -33,7 +33,7 @@
                 </div>
                 <div>
                     <label for="totalPrice">总金额：</label>
-                    <input type="text" name="totalPrice" id="totalPrice" value="${bill.totalPrice }"> 
+                    <input type="text" name="totalPrice" id="totalPrice" value="${bill.totalPrice }">
 					<font color="red"></font>
                 </div>
                 <div>

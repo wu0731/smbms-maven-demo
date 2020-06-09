@@ -52,8 +52,7 @@ public class SmbmsBillController {
     @RequestMapping(value = "/getBillById")
     public String getBillById(@RequestParam(value = "billid") String id, Model model, String url) {
         if(!StringUtils.isNullOrEmpty(id)){
-            SmbmsBill bill = null;
-            bill = billService.getBillById(id);
+            SmbmsBill  bill = billService.getBillById(id);
             model.addAttribute("bill", bill);
         }
         return url;
