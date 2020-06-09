@@ -41,7 +41,7 @@ public class SmbmsUserController {
     private SmbmsRoleService roleService;
 
     @RequestMapping(value = "/userAdd")
-    public String add(UserCondition userCondition, Model model, HttpServletRequest request)
+    public String add(UserCondition userCondition, HttpServletRequest request)
             throws ParseException {
         //进行数据类型转换
         SmbmsUser user=new SmbmsUser();
@@ -61,7 +61,7 @@ public class SmbmsUserController {
     }
 
     @RequestMapping(value = "/userQuery")
-    public String query(HttpServletRequest request) {
+    public String query(HttpServletRequest request,Model model) {
         //查询用户列表
         String queryUserName = request.getParameter("queryname");
         String temp = request.getParameter("queryUserRole");
@@ -115,19 +115,19 @@ public class SmbmsUserController {
 
 
         userList = userService.getUserList(queryUserName,queryUserRole,currentPageNo, pageSize);
-        request.setAttribute("userList", userList);
+        model.addAttribute("userList", userList);
         List<SmbmsRole> roleList = null;
         try {
             roleList = roleService.getRoleList();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        request.setAttribute("roleList", roleList);
-        request.setAttribute("queryUserName", queryUserName);
-        request.setAttribute("queryUserRole", queryUserRole);
-        request.setAttribute("totalPageCount", totalPageCount);
-        request.setAttribute("totalCount", totalCount);
-        request.setAttribute("currentPageNo", currentPageNo);
+        model.addAttribute("roleList", roleList);
+        model.addAttribute("queryUserName", queryUserName);
+        model.addAttribute("queryUserRole", queryUserRole);
+        model.addAttribute("totalPageCount", totalPageCount);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("currentPageNo", currentPageNo);
         return "userlist";
     }
 
@@ -157,21 +157,19 @@ public class SmbmsUserController {
     }
 
     @RequestMapping(value = "/userById")
-    public String getUserById(HttpServletRequest request,String url) {
-        String id = request.getParameter("uid");
-        if(!StringUtils.isNullOrEmpty(id)){
+    public String getUserById(String uid,String url,Model model) {
+        if(!StringUtils.isNullOrEmpty(uid)){
             //调用后台方法得到user对象
-            SmbmsUser user = userService.getUserById(id);
-            request.setAttribute("user", user);
+            SmbmsUser user = userService.getUserById(uid);
+            model.addAttribute("user", user);
             SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
-            request.setAttribute("userBirthday",simpleDateFormat.format(user.getBirthday()));
+            model.addAttribute("userBirthday",simpleDateFormat.format(user.getBirthday()));
         }
         return url;
     }
 
     @RequestMapping(value = "/userModify")
-    public String modify(HttpServletRequest request,UserCondition userCondition) throws ParseException {
-        String id = request.getParameter("uid");
+    public String modify(String uid,HttpServletRequest request,UserCondition userCondition) throws ParseException {
         SmbmsUser user=new SmbmsUser();
         BeanUtils.copyProperties(userCondition,user);
         //处理不能被复制的字段
@@ -182,7 +180,7 @@ public class SmbmsUserController {
         }
         user.setCreatedBy(logUser.getId());
         user.setCreationDate(new Date());
-        user.setId(Integer.valueOf(id));
+        user.setId(Integer.valueOf(uid));
         user.setModifyBy(((SmbmsUser)request.getSession().getAttribute(Constants.USER_SESSION)).getId());
         user.setModifyDate(new Date());
         if(userService.modify(user)){
@@ -248,9 +246,8 @@ public class SmbmsUserController {
 
     @RequestMapping(value = "/userCodeExist",produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public String userCodeExist(HttpServletRequest request){
+    public String userCodeExist(String userCode){
         //判断用户账号是否可用
-        String userCode = request.getParameter("userCode");
         HashMap<String, String> resultMap = new HashMap<String, String>();
         if(StringUtils.isNullOrEmpty(userCode)){
             //userCode == null || userCode.equals("")

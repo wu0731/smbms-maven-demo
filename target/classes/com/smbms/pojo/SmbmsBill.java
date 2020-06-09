@@ -29,26 +29,6 @@ public class SmbmsBill {
 
         private String providerName;//供应商名称
 
-        @Override
-        public String toString() {
-            return "SmbmsBill{" +
-                    "id=" + id +
-                    ", billCode='" + billCode + '\'' +
-                    ", productName='" + productName + '\'' +
-                    ", productDesc='" + productDesc + '\'' +
-                    ", productUnit='" + productUnit + '\'' +
-                    ", productCount=" + productCount +
-                    ", totalPrice=" + totalPrice +
-                    ", isPayment=" + isPayment +
-                    ", providerId=" + providerId +
-                    ", createdBy=" + createdBy +
-                    ", creationDate=" + creationDate +
-                    ", modifyBy=" + modifyBy +
-                    ", modifyDate=" + modifyDate +
-                    ", providerName='" + providerName + '\'' +
-                    '}';
-        }
-
         public String getProviderName() {
             return providerName;
         }
