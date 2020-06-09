@@ -33,7 +33,6 @@ public class LoginSmbmsUserController {
     public String dologin(String userCode,String userPassword,
                           HttpServletRequest request){
         logger.info("进入login.do方法");
-        System.out.println("进入login.do方法");
         /*调用service方法*/
         SmbmsUser user = userService.login(userCode,userPassword);
         if (user!=null){
